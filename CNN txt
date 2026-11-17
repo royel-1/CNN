@@ -1,0 +1,65 @@
+
+# Practical 3: Image Classification using CNN
+
+# 1. Import libraries
+import tensorflow as tf
+import matplotlib.pyplot as plt
+
+from tensorflow.keras import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D
+from tensorflow.keras.layers import Flatten, Dense
+
+# 2. Load CIFAR-10 dataset
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
+
+# 3. Normalize image data
+x_train = x_train / 255.0
+x_test = x_test / 255.0
+
+# 4. Define CNN model
+model = Sequential([
+    Conv2D(32, (3, 3), activation='relu',
+           input_shape=(32, 32, 3)),
+    MaxPooling2D((2, 2)),
+
+    Conv2D(64, (3, 3), activation='relu'),
+    MaxPooling2D((2, 2)),
+
+    Flatten(),
+    Dense(64, activation='relu'),
+    Dense(10, activation='softmax')
+])
+
+# 5. Compile the model
+model.compile(
+    optimizer='adam',
+    loss='sparse_categorical_crossentropy',
+    metrics=['accuracy']
+)
+
+# 6. Train the model
+history = model.fit(
+    x_train, y_train,
+    epochs=5,
+    validation_data=(x_test, y_test)
+)
+
+# 7. Evaluate model performance
+loss, accuracy = model.evaluate(x_test, y_test)
+
+print("Test Loss:", loss)
+print("Test Accuracy:", accuracy)
+
+# 8. Plot accuracy
+plt.plot(history.history['accuracy'])
+plt.title('Model Accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.show()
+
+# 9. Plot loss
+plt.plot(history.history['loss'])
+plt.title('Model Loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.show()
